@@ -1,6 +1,7 @@
 import requests
 import datetime
 import csv
+import os
 
 # Dictionary to map team names to their three-letter abbreviations
 team_abbreviations = {
@@ -61,6 +62,8 @@ if response.status_code == 200:
                 "away_team_score": game["teams"]["away"].get("score", "N/A"),
             }
             game_results.append(game_info)
+
+    os.makedirs("data", exist_ok=True)
 
     # Save the extracted data to a CSV file
     with open(f"data/mlb_game_results_{yesterday}.csv", "w", newline="") as file:
