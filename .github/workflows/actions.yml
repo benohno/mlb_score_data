@@ -1,41 +1,37 @@
-name: run main.py
+name: Fetch MLB Data
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # At 00:00 on Monday
+    - cron: '0 8 * * *'  # Runs every day at 8 AM UTC, which is 3 AM EST or 4 AM EDT
+  workflow_dispatch:
 
 jobs:
-  build:
+  fetch-data:
     runs-on: ubuntu-latest
+
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9' # install the python version needed
-          
-      - name: install python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          
-      - name: execute py script # run main.py
-        env:
-          SOME_SECRET: ${{ secrets.SOME_SECRET }}
-        run: python main.py
-          
-      - name: commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
-          
-      - name: push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run Python script
+      run: python fetch_mlb_data.py
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add .
+        git commit -m "Fetch MLB data"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
