@@ -63,7 +63,7 @@ if response.status_code == 200:
             game_results.append(game_info)
 
     # Save the extracted data to a CSV file
-    with open(f"mlb_game_results_{yesterday}.csv", "w", newline="") as file:
+    with open(f"data/mlb_game_results_{yesterday}.csv", "w", newline="") as file:
         writer = csv.DictWriter(
             file,
             fieldnames=["home_team", "away_team", "home_team_score", "away_team_score"],
